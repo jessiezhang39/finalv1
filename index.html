@@ -4,16 +4,16 @@
 
   
 /* global nn */
-let music, stopTimer;
+let music, bgmusic, stopTimer;
 
 // pick a letter’s audio offset/duration
 const samples = {
-  a: { offset: 0.00,  duration: 1.87 },
-  s: { offset: 1.89,  duration: 1.72 },
-  d: { offset: 3.74,  duration: 1.92 },
-  f: { offset: 7.06,  duration: 1.71 },
-  h: { offset: 8.79,  duration: 1.69 },
-  j: { offset: 10.52, duration: 1.70 },
+  s: { offset: 0.4224925139783237, duration: 1.641685197172915 },
+  d: { offset: 2.836735450997316, duration: 1.4847594062666811 },
+  f: { offset: 5.244942780673761, duration: 1.4968306209517754 },
+  j: { offset: 7.06,  duration: 1.71 },
+  k: { offset: 8.79,  duration: 1.69 },
+  l: { offset: 10.52, duration: 1.70 },
 };
 
 // which letters spawn squares (all keys) and freeze on space
@@ -80,7 +80,6 @@ function mouseUp(e) {
 }
 
 
-// spawn one Mondrian square sliding across the screen
 function spawnSquare() {
   const size     = 20 + Math.random()*80;
   const color    = COLORS[Math.floor(Math.random()*4)];
@@ -115,17 +114,16 @@ function spawnSquare() {
     })
     .addTo('body');
 
-  // kick off the slide
+
   setTimeout(() => {
     sq.css({ transform: `translate(${dx}px,${dy}px)` });
   }, 20);
 
-  // remove when done
+
   const removal = setTimeout(() => sq.remove(), duration*1000 + 100);
   movingSquares.push({ el: sq, timer: removal });
 }
 
-// freeze in place
 function freezeSquares() {
   movingSquares.forEach(({ el, timer }) => {
     clearTimeout(timer);
@@ -135,11 +133,9 @@ function freezeSquares() {
   movingSquares.length = 0;
 }
 
-// handle keypress: audio+spawn for A/S/D/F/H/J, spawn only for K/L, freeze on Space
 function playSample(e) {
   const k = e.key.toLowerCase();
   if (samples[k]) {
-    // play that sample
     const s = samples[k];
     music.currentTime = s.offset;
     music.play();
@@ -153,28 +149,82 @@ function playSample(e) {
   }
 }
 
-// once audio is ready, show instructions
 function fileLoaded() {
-  const instruction = nn.create('span')
+  // 1A) Initial splash screen
+  const splash = nn.create('div')
+    .content("Mondrian’s Broadway Boogie Woogie reimagined!\nPress START to draw.")
+    .css({
+      position:   'absolute',
+      top:        '50%',
+      left:       '50%',
+      transform:  'translate(-50%,-50%)',
+      whiteSpace: 'pre-wrap',
+      textAlign:  'center',
+      padding:    '1rem 2rem',
+      fontFamily: 'Garamond, serif',
+      fontSize:   '1.4rem',
+      color:      '#fff',
+      background: 'rgba(0,0,0,0.5)',
+      borderRadius:'8px',
+      zIndex:     1000
+    })
+    .addTo('body');
+
+  const startBtn = nn.create('button')
+    .content('START')
+    .css({
+      position:   'absolute',
+      top:        '65%',
+      left:       '50%',
+      transform:  'translateX(-50%)',
+      padding:    '0.5rem 1rem',
+      fontSize:   '1rem',
+      zIndex:     1001,
+      cursor:     'pointer'
+    })
+    .addTo('body');
+  
+  startBtn.on('click', () => {
+    // remove splash and button
+    bgmusic.play()
+    splash.remove();
+    startBtn.remove();
+
+    // now show the step list
+    showSteps();
+  });
+
+function showSteps() {
+  const steps = nn.create('div')
     .content(`
-    Modrian reimagined! Start the flow of traffic with keys A - J, press space bar to freeze.
+Step 1: Click & drag to customize NYC gridlines
+Step 2: Press 🆂🅳🅵 🅹🅺🅻 to move your traffic squares  
+Step 3: Hit Space to freeze the flow
     `)
     .css({
-      position:     'absolute',
-      top:          'center',
-      left:         'center',
-      padding:      '1rem 2rem',
-      fontFamily:   'Garamond, serif',
-      fontSize:     '1.2rem',
-      color:        '#fff',
-      background:   'rgba(0,0,0,0.3)',
-      borderRadius: '12px',
-      boxShadow:    '0 4px 20px rgba(0,0,0,0.3)',
+      position:   'absolute',
+      top:        '50%',
+      left:       '50%',
+      transform:  'translate(-50%,-50%)',
+      whiteSpace: 'pre-wrap',
+      textAlign:  'left',
+      lineHeight: '1.5',
+      padding:    '1rem 2rem',
+      fontFamily: 'Garamond, serif',
+      fontSize:   '1.2rem',
+      color:      '#fff',
+      background: 'rgba(0,0,0,0.4)',
+      borderRadius:'8px',
+      zIndex:     1000
     })
-   .addTo('body')
-    setTimeout(() => {
-    instruction.css({ transition: 'opacity 1s ease', opacity: 0 });
-  }, 3000);
+    .addTo('body');
+
+  // Fade out after 4s
+  setTimeout(() => {
+    steps.css({ transition: 'opacity 1s ease', opacity: 0 });
+  }, 4000);
+}
+
   
   nn.create('button')
   .content('Clear Grid')
@@ -192,7 +242,7 @@ function fileLoaded() {
     .addTo('body');
 }
 
-// initial setup
+
 function setup() {
   nn.get('body').css({
     userSelect:    'none',
@@ -206,8 +256,12 @@ function setup() {
     position:      'relative',
   });
 
+  bgmusic = nn.create('audio')
+            .set('src', 'patterns__i_chord_-_level_1.mp3')
+            .addTo('body')
+  
   music = nn.create('audio')
-    .set('src', 'violin-chords-easy-dreams_140bpm_C_minor.mp3')
+    .set('src', 'Blues Piano Chords Level 1 - Spread Chords.mp3')
     .addTo('body')
     .on('loadeddata', fileLoaded);
 }
