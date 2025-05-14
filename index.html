@@ -17,16 +17,12 @@ const samples = {
 };
 
 
-const COLORS     = ['red','blue','white', 'yellow'];
+const COLORS = ['red','blue','white', 'yellow'];
 const movingSquares = [];
 
 let isDrawingLine = false;
 let startX = 0, startY = 0;
 let lineDiv = null;
-  
-const min = 10;
-const max = 20;
-const randomHeight = Math.random() * (max - min) + min;
 
 function mouseDown(e) {
   isDrawingLine = true;
@@ -50,12 +46,12 @@ function mouseMove(e) {
     // Horizontal line
     const width = Math.abs(dx);
     const left  = dx > 0 ? startX : e.clientX;
-    const top   = startY - 5;  // line thickness 10px
+    const top   = startY - 5;  
     lineDiv.css({
       left:   `${left}px`,
       top:    `${top}px`,
       width:  `${width}px`,
-      height: `${randomHeight}px`
+      height: `10px`
     });
   } else {
     // Vertical line
@@ -65,7 +61,7 @@ function mouseMove(e) {
     lineDiv.css({
       left:   `${left}px`,
       top:    `${top}px`,
-      width:  `${randomHeight}px`,
+      width:  `10px`,
       height: `${height}px`
     });
   }
@@ -152,25 +148,29 @@ function playSample(e) {
 }
 
 function fileLoaded() {
-  // 1A) Initial splash screen
+ 
   const splash = nn.create('div')
     .content("Mondrian’s Broadway Boogie Woogie reimagined!\nPress START to draw.")
     .css({
       position:   'absolute',
       top:        '50%',
       left:       '50%',
+      width:      '80vw',
+      height:     '80vh',
       transform:  'translate(-50%,-50%)',
-      whiteSpace: 'pre-wrap',
       textAlign:  'center',
-      padding:    '2rem 4rem',
+      justifyContent:  'center',
+      padding:    '1rem 2rem',
       fontFamily: 'Garamond, serif',
-      fontSize:   '1rem',
+      fontSize:   '1.5rem',
       color:      'white',
+      borderRadius:  '10px',
+      boxShadow:     '0 4px 20px rgba(0,0,0,0.3)',
+      textShadow:    '1px 1px 4px rgba(0,0,0,0.6)',
       backgroundImage:'url("mondrian.jpg")',
-      backgroundSize:  'cover',
       backgroundPosition: 'center',
-      borderRadius:'8px',
-      zIndex:     1000
+      display: 'flex',
+      flexDirection:   'column'
     })
     .addTo('body');
 
@@ -182,8 +182,8 @@ function fileLoaded() {
       left:       '50%',
       transform:  'translateX(-50%)',
       padding:    '0.5rem 1rem',
+      fontFamily: 'Garamond, serif',
       fontSize:   '1rem',
-      zIndex:     1001,
       cursor:     'pointer'
     })
     .addTo('body');
@@ -223,7 +223,6 @@ Step 3: Hit Space to freeze the flow
     })
     .addTo('body');
 
-  // Fade out after 4s
   setTimeout(() => {
     steps.css({ transition: 'opacity 1s ease', opacity: 0 });
   }, 4000);
@@ -237,8 +236,8 @@ Step 3: Hit Space to freeze the flow
     top:        '10px',
     right:      '10px',
     padding:    '0.5rem 1rem',
+    fontFamily: 'Garamond, serif',
     fontSize:   '0.9rem',
-    zIndex:     999
   })
   .on('click', () => document.querySelectorAll('div').forEach(d => {
     if (d.style.backgroundColor === 'yellow') d.remove();
