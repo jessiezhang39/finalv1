@@ -17,19 +17,73 @@ const samples = {
 };
 
 // which letters spawn squares (all keys) and freeze on space
-const SPAWN_KEYS = new Set(['a','s','d','f','h','j','k','l']);
-const COLORS     = ['red','blue','white'];
+
+const COLORS     = ['red','blue','white', 'yellow'];
 const movingSquares = [];
 
-// random HSL helper
-function getRandomColor() {
-  return `hsl(${Math.floor(Math.random()*360)},80%,60%)`;
+let isDrawingLine = false;
+let startX = 0, startY = 0;
+let lineDiv = null;
+  
+const min = 10;
+const max = 20;
+const randomHeight = Math.random() * (max - min) + min;
+
+function mouseDown(e) {
+  isDrawingLine = true;
+  startX = e.clientX;
+  startY = e.clientY;
+  lineDiv = nn.create('div')
+    .css({
+      position:        'absolute',
+      backgroundColor: 'yellow',
+      zIndex:          0
+    })
+    .addTo('body');
 }
+
+function mouseMove(e) {
+  if (!isDrawingLine) return;
+  const dx = e.clientX - startX;
+  const dy = e.clientY - startY;
+
+  if (Math.abs(dx) > Math.abs(dy)) {
+    // Horizontal line
+    const width = Math.abs(dx);
+    const left  = dx > 0 ? startX : e.clientX;
+    const top   = startY - 5;  // line thickness 10px
+    lineDiv.css({
+      left:   `${left}px`,
+      top:    `${top}px`,
+      width:  `${width}px`,
+      height: `${randomHeight}px`
+    });
+  } else {
+    // Vertical line
+    const height = Math.abs(dy);
+    const top    = dy > 0 ? startY : e.clientY;
+    const left   = startX - 5;
+    lineDiv.css({
+      left:   `${left}px`,
+      top:    `${top}px`,
+      width:  `${randomHeight}px`,
+      height: `${height}px`
+    });
+  }
+}
+
+function mouseUp(e) {
+  if (!isDrawingLine) return;
+  mouseMove(e);
+  isDrawingLine = false;
+  lineDiv = null;
+}
+
 
 // spawn one Mondrian square sliding across the screen
 function spawnSquare() {
   const size     = 20 + Math.random()*80;
-  const color    = COLORS[Math.floor(Math.random()*3)];
+  const color    = COLORS[Math.floor(Math.random()*4)];
   const duration = 2 + Math.random()*3;  // sec
   let startX, startY, dx, dy;
 
@@ -94,9 +148,6 @@ function playSample(e) {
 
     spawnSquare();
   }
-  else if (SPAWN_KEYS.has(k)) {
-    spawnSquare();
-  }
   else if (k === ' ') {
     freezeSquares();
   }
@@ -128,7 +179,7 @@ function setup() {
     margin:        0,
     overflow:      'hidden',
     height:        '100vh',
-    background:    getRandomColor(),
+    background:    'white',
     display:       'flex',
     justifyContent:'center',
     alignItems:    'center',
@@ -141,8 +192,10 @@ function setup() {
     .on('loadeddata', fileLoaded);
 }
 
-nn.on('load', setup);
-nn.on('keypress', playSample);
-
+nn.on('load', setup)
+nn.on('keypress', playSample)
+nn.on('mousedown', mouseDown)
+nn.on('mousemove', mouseMove)
+nn.on('mouseup', mouseUp)
 
 </script>
