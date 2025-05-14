@@ -4,16 +4,16 @@
 
   
 /* global nn */
-let music, bgmusic, stopTimer;
+let music1, music2, bgmusic, stopTimer;
 
 // pick a letter’s audio offset/duration
 const samples = {
   s: { offset: 0.4224925139783237, duration: 1.641685197172915 },
   d: { offset: 2.836735450997316, duration: 1.4847594062666811 },
   f: { offset: 5.244942780673761, duration: 1.4968306209517754 },
-  j: { offset: 7.06,  duration: 1.71 },
-  k: { offset: 8.79,  duration: 1.69 },
-  l: { offset: 10.52, duration: 1.70 },
+  j: { offset: 0.5047509454533065, duration: 1.8382904803546354 },
+  k: { offset: 2.916338795952438, duration: 1.732355096740977 },
+  l: { offset: 5.346621125912803, duration: 1.6575771788960436 },
 };
 
 // which letters spawn squares (all keys) and freeze on space
@@ -137,11 +137,14 @@ function playSample(e) {
   const k = e.key.toLowerCase();
   if (samples[k]) {
     const s = samples[k];
-    music.currentTime = s.offset;
-    music.play();
+    music1.currentTime = s.offset;
+    music1.play();
     if (stopTimer) clearTimeout(stopTimer);
-    stopTimer = setTimeout(() => music.pause(), s.duration*1000);
-
+    stopTimer = setTimeout(() => music1.pause(), s.duration*1000);
+    music2.currentTime = s.offset;
+    music2.play();
+    if (stopTimer) clearTimeout(stopTimer);
+    stopTimer = setTimeout(() => music2.pause(), s.duration*1000);
     spawnSquare();
   }
   else if (k === ' ') {
@@ -260,10 +263,14 @@ function setup() {
             .set('src', 'patterns__i_chord_-_level_1.mp3')
             .addTo('body')
   
-  music = nn.create('audio')
+  music1 = nn.create('audio')
     .set('src', 'Blues Piano Chords Level 1 - Spread Chords.mp3')
     .addTo('body')
+  music2 = nn.create('audio')
+    .set('src', 'Blues Piano Chords Level 2- Extended Chords.mp3')
+    .addTo('body')
     .on('loadeddata', fileLoaded);
+ 
 }
 
 nn.on('load', setup)
