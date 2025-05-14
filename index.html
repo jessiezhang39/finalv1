@@ -16,7 +16,6 @@ const samples = {
   l: { offset: 5.346621125912803, duration: 1.6575771788960436 },
 };
 
-// which letters spawn squares (all keys) and freeze on space
 
 const COLORS     = ['red','blue','white', 'yellow'];
 const movingSquares = [];
@@ -35,9 +34,9 @@ function mouseDown(e) {
   startY = e.clientY;
   lineDiv = nn.create('div')
     .css({
-      position:        'absolute',
+      position: 'absolute',
       backgroundColor: 'yellow',
-      zIndex:          0
+      zIndex:0
     })
     .addTo('body');
 }
@@ -163,11 +162,13 @@ function fileLoaded() {
       transform:  'translate(-50%,-50%)',
       whiteSpace: 'pre-wrap',
       textAlign:  'center',
-      padding:    '1rem 2rem',
+      padding:    '2rem 4rem',
       fontFamily: 'Garamond, serif',
-      fontSize:   '1.4rem',
-      color:      '#fff',
-      background: 'rgba(0,0,0,0.5)',
+      fontSize:   '1rem',
+      color:      'white',
+      backgroundImage:'url("mondrian.jpg")',
+      backgroundSize:  'cover',
+      backgroundPosition: 'center',
       borderRadius:'8px',
       zIndex:     1000
     })
