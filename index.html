@@ -155,12 +155,14 @@ function playSample(e) {
 
 // once audio is ready, show instructions
 function fileLoaded() {
-  nn.create('span')
-    .content('Press A/S/D/F/H/J for audio+square; K/L for squares; Space to freeze')
+  const instruction = nn.create('span')
+    .content(`
+    Modrian reimagined! Start the flow of traffic with keys A - J, press space bar to freeze.
+    `)
     .css({
       position:     'absolute',
-      top:          '10px',
-      left:         '10px',
+      top:          'center',
+      left:         'center',
       padding:      '1rem 2rem',
       fontFamily:   'Garamond, serif',
       fontSize:     '1.2rem',
@@ -169,6 +171,24 @@ function fileLoaded() {
       borderRadius: '12px',
       boxShadow:    '0 4px 20px rgba(0,0,0,0.3)',
     })
+   .addTo('body')
+    setTimeout(() => {
+    instruction.css({ transition: 'opacity 1s ease', opacity: 0 });
+  }, 3000);
+  
+  nn.create('button')
+  .content('Clear Grid')
+  .css({
+    position:   'absolute',
+    top:        '10px',
+    right:      '10px',
+    padding:    '0.5rem 1rem',
+    fontSize:   '0.9rem',
+    zIndex:     999
+  })
+  .on('click', () => document.querySelectorAll('div').forEach(d => {
+    if (d.style.backgroundColor === 'yellow') d.remove();
+  }))
     .addTo('body');
 }
 
