@@ -2,11 +2,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.15/paper-full.min.js"></script>
 <script>
 
-  
 /* global nn */
 let music1, music2, bgmusic, stopTimer;
 
-// pick a letter’s audio offset/duration
 const samples = {
   s: { offset: 0.4224925139783237, duration: 1.641685197172915 },
   d: { offset: 2.836735450997316, duration: 1.4847594062666811 },
@@ -14,45 +12,46 @@ const samples = {
   j: { offset: 0.5047509454533065, duration: 1.8382904803546354 },
   k: { offset: 2.916338795952438, duration: 1.732355096740977 },
   l: { offset: 5.346621125912803, duration: 1.6575771788960436 },
-};
+}
 
+//Drawing a line
 
-const COLORS = ['red','blue','white', 'yellow'];
-const movingSquares = [];
+const COLORS = ['red','blue','white', 'yellow']
+const movingSquares = []
 
-let isDrawingLine = false;
-let startX = 0, startY = 0;
-let lineDiv = null;
+let isDrawingLine = false
+let startX = 0, startY = 0
+let lineDiv = null
 
 function mouseDown(e) {
-  isDrawingLine = true;
-  startX = e.clientX;
-  startY = e.clientY;
+  isDrawingLine = true
+  startX = e.clientX
+  startY = e.clientY
   lineDiv = nn.create('div')
     .css({
       position: 'absolute',
       backgroundColor: 'yellow',
       zIndex:0
     })
-    .addTo('body');
+    .addTo('body')
 }
 
 function mouseMove(e) {
-  if (!isDrawingLine) return;
-  const dx = e.clientX - startX;
-  const dy = e.clientY - startY;
+  //if (!isDrawingLine) return;
+  const dx = e.clientX - startX
+  const dy = e.clientY - startY
 
   if (Math.abs(dx) > Math.abs(dy)) {
     // Horizontal line
-    const width = Math.abs(dx);
-    const left  = dx > 0 ? startX : e.clientX;
-    const top   = startY - 5;  
+    const width = Math.abs(dx)
+    const left  = dx > 0 ? startX : e.clientX
+    const top   = startY - 5 
     lineDiv.css({
       left:   `${left}px`,
       top:    `${top}px`,
       width:  `${width}px`,
       height: `10px`
-    });
+    })
   } else {
     // Vertical line
     const height = Math.abs(dy);
@@ -74,14 +73,16 @@ function mouseUp(e) {
   lineDiv = null;
 }
 
-
+//Spawning squares
+  
 function spawnSquare() {
-  const size     = 20 + Math.random()*80;
-  const color    = COLORS[Math.floor(Math.random()*4)];
-  const duration = 2 + Math.random()*3;  // sec
-  let startX, startY, dx, dy;
+  const size     = 20 + Math.random() * 80
+  const color    = COLORS[Math.floor(Math.random() * 4)]
+  const duration = 2 + Math.random() * 3
+  
+  let startX, startY, dx, dy
 
-  switch (Math.floor(Math.random()*4)) {
+  switch (Math.floor(Math.random() * 4)) {
     case 0: // top
       startX = Math.random()*nn.width; startY = -size;
       dx = 0; dy = nn.height + size*2; break;
@@ -99,58 +100,56 @@ function spawnSquare() {
   const sq = nn.create('div')
     .css({
       position:        'absolute',
-      width:           size  + 'px',
-      height:          size  + 'px',
-      left:            startX+ 'px',
-      top:             startY+ 'px',
-      backgroundColor: color,
+      width:           size,
+      height:          size,
+      left:            startX,
+      top:             startY,
+      backgroundColor:  color,
       transition:      `transform ${duration}s linear`,
       transform:       'translate(0,0)',
     })
-    .addTo('body');
-
+    .addTo('body')
 
   setTimeout(() => {
-    sq.css({ transform: `translate(${dx}px,${dy}px)` });
-  }, 20);
+    sq.css({ transform: `translate(${dx}px,${dy}px)` })
+  }, 20)
 
-
-  const removal = setTimeout(() => sq.remove(), duration*1000 + 100);
-  movingSquares.push({ el: sq, timer: removal });
+  const removal = setTimeout(() => sq.remove(), duration*1000 + 100)
+  movingSquares.push({ el: sq, timer: removal })
 }
 
 function freezeSquares() {
   movingSquares.forEach(({ el, timer }) => {
     clearTimeout(timer);
     const tf = window.getComputedStyle(el).transform;
-    el.css({ transition: 'none', transform: tf });
-  });
-  movingSquares.length = 0;
+    el.css({ transition: 'none', transform: tf })
+  })
+  movingSquares.length = 0
 }
 
 function playSample(e) {
-  const k = e.key.toLowerCase();
+  const k = e.key.toLowerCase()
   if (samples[k]) {
-    const s = samples[k];
-    music1.currentTime = s.offset;
-    music1.play();
-    if (stopTimer) clearTimeout(stopTimer);
-    stopTimer = setTimeout(() => music1.pause(), s.duration*1000);
-    music2.currentTime = s.offset;
-    music2.play();
-    if (stopTimer) clearTimeout(stopTimer);
-    stopTimer = setTimeout(() => music2.pause(), s.duration*1000);
-    spawnSquare();
+    const s = samples[k]
+    music1.currentTime = s.offset
+    music1.play()
+    if (stopTimer) clearTimeout(stopTimer)
+    stopTimer = setTimeout(() => music1.pause(), s.duration*1000)
+    music2.currentTime = s.offset
+    music2.play()
+    if (stopTimer) clearTimeout(stopTimer)
+    stopTimer = setTimeout(() => music2.pause(), s.duration*1000)
+    spawnSquare()
   }
   else if (k === ' ') {
-    freezeSquares();
+    freezeSquares()
   }
 }
 
 function fileLoaded() {
  
   const splash = nn.create('div')
-    .content("Mondrian’s Broadway Boogie Woogie reimagined!\nPress START to draw.")
+    .content("Mondrian’s Broadway Boogie Woogie reimagined!")
     .css({
       position:   'absolute',
       top:        '50%',
@@ -172,7 +171,7 @@ function fileLoaded() {
       display: 'flex',
       flexDirection:   'column'
     })
-    .addTo('body');
+    .addTo('body')
 
   const startBtn = nn.create('button')
     .content('START')
@@ -186,17 +185,14 @@ function fileLoaded() {
       fontSize:   '1rem',
       cursor:     'pointer'
     })
-    .addTo('body');
+    .addTo('body')
   
   startBtn.on('click', () => {
-    // remove splash and button
     bgmusic.play()
-    splash.remove();
-    startBtn.remove();
-
-    // now show the step list
-    showSteps();
-  });
+    splash.remove()
+    startBtn.remove()
+    showSteps()
+  })
 
 function showSteps() {
   const steps = nn.create('div')
@@ -221,11 +217,11 @@ Step 3: Hit Space to freeze the flow
       borderRadius:'8px',
       zIndex:     1000
     })
-    .addTo('body');
+    .addTo('body')
 
   setTimeout(() => {
-    steps.css({ transition: 'opacity 1s ease', opacity: 0 });
-  }, 4000);
+    steps.css({ transition: 'opacity 1s ease', opacity: 0 })
+  }, 6000)
 }
 
   
@@ -242,9 +238,8 @@ Step 3: Hit Space to freeze the flow
   .on('click', () => document.querySelectorAll('div').forEach(d => {
     if (d.style.backgroundColor === 'yellow') d.remove();
   }))
-    .addTo('body');
+    .addTo('body')
 }
-
 
 function setup() {
   nn.get('body').css({
@@ -257,7 +252,7 @@ function setup() {
     justifyContent:'center',
     alignItems:    'center',
     position:      'relative',
-  });
+  })
 
   bgmusic = nn.create('audio')
             .set('src', 'patterns__i_chord_-_level_1.mp3')
@@ -269,8 +264,7 @@ function setup() {
   music2 = nn.create('audio')
     .set('src', 'Blues Piano Chords Level 2- Extended Chords.mp3')
     .addTo('body')
-    .on('loadeddata', fileLoaded);
- 
+    .on('loadeddata', fileLoaded)
 }
 
 nn.on('load', setup)
