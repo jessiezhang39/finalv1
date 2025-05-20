@@ -3,15 +3,18 @@
 <script>
 
 /* global nn */
-let music1, music2, bgmusic, stopTimer;
+let music1, music2, bgmusic, stopTimer1, stopTimer2;
 
-const samples = {
+const samples1 = {
   s: { offset: 0.4224925139783237, duration: 1.641685197172915 },
   d: { offset: 2.836735450997316, duration: 1.4847594062666811 },
-  f: { offset: 5.244942780673761, duration: 1.4968306209517754 },
-  j: { offset: 0.5047509454533065, duration: 1.8382904803546354 },
-  k: { offset: 2.916338795952438, duration: 1.732355096740977 },
-  l: { offset: 5.346621125912803, duration: 1.6575771788960436 },
+  f: { offset: 5.244942780673761, duration: 1.4968306209517754 }
+}
+
+const samples2 = {
+  j: { offset: 0.5010867768595041, duration: 0.7478340533433508 },
+  k: { offset: 0.015184447783621338, duration: 0.47831010518407213 },
+  l: { offset: 1.2679013899323814, duration: 0.2998928437265216 }
 }
 
 //Drawing a line
@@ -129,16 +132,20 @@ function freezeSquares() {
 
 function playSample(e) {
   const k = e.key.toLowerCase()
-  if (samples[k]) {
-    const s = samples[k]
+  const m = e.key.toLowerCase()
+  if (samples1[k]) {
+    const s = samples1[k]
     music1.currentTime = s.offset
     music1.play()
-    if (stopTimer) clearTimeout(stopTimer)
-    stopTimer = setTimeout(() => music1.pause(), s.duration*1000)
-    music2.currentTime = s.offset
+    if (stopTimer1) clearTimeout(stopTimer1)
+    stopTimer1 = setTimeout(() => music1.pause(), s.duration*1000)
+  }
+  if (samples2[m]) {  
+    const n = samples2[m]
+    music2.currentTime = n.offset
     music2.play()
-    if (stopTimer) clearTimeout(stopTimer)
-    stopTimer = setTimeout(() => music2.pause(), s.duration*1000)
+    if (stopTimer2) clearTimeout(stopTimer2)
+    stopTimer2 = setTimeout(() => music2.pause(), n.duration*1000)
     spawnSquare()
   }
   else if (k === ' ') {
@@ -261,8 +268,9 @@ function setup() {
   music1 = nn.create('audio')
     .set('src', 'Blues Piano Chords Level 1 - Spread Chords.mp3')
     .addTo('body')
+    .on('loadeddata', fileLoaded)
   music2 = nn.create('audio')
-    .set('src', 'Blues Piano Chords Level 2- Extended Chords.mp3')
+    .set('src', 'drum.wav')
     .addTo('body')
     .on('loadeddata', fileLoaded)
 }
